@@ -1,11 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:posts_app/components/custom_button.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:posts_app/components/default_app_bar.dart';
 
-class CreatePostScreen extends StatelessWidget {
+class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
+
+  @override
+  State<CreatePostScreen> createState() => _CreatePostScreenState();
+}
+
+class _CreatePostScreenState extends State<CreatePostScreen> {
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _authorNameController = TextEditingController();
+  TextEditingController _contentController = TextEditingController();
+
+  bool isAdding = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +33,7 @@ class CreatePostScreen extends StatelessWidget {
           children: [
             inputLabel('Title'),
             TextField(
+              controller: _titleController,
               decoration: InputDecoration(
                 hintText: 'Enter the title of the post here...',
                 border: OutlineInputBorder(),
@@ -27,6 +42,7 @@ class CreatePostScreen extends StatelessWidget {
             const Gap(16),
             inputLabel('Author'),
             TextField(
+              controller: _authorNameController,
               autocorrect: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -37,7 +53,7 @@ class CreatePostScreen extends StatelessWidget {
             inputLabel('Content'),
             Expanded(
               child: TextField(
-                // maxLines: 10,
+                controller: _contentController,
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
@@ -48,7 +64,11 @@ class CreatePostScreen extends StatelessWidget {
               ),
             ),
             const Gap(16),
-            CustomButton(label: 'Create Post'),
+            CustomButton(
+              label: 'Create Post',
+              onTap: _addPost,
+              isLoading: isAdding,
+            ),
             const Gap(16),
           ],
         ),
@@ -60,4 +80,25 @@ class CreatePostScreen extends StatelessWidget {
         label,
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       );
+
+  void _addPost() async {
+    setState(() {
+      isAdding = true;
+    });
+    Uri url = Uri.https(
+      'posts-app-4ab91-default-rtdb.asia-southeast1.firebasedatabase.app',
+      'posts.json',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'title': _titleController.text,
+        'author': _authorNameController.text,
+        'content': _contentController.text
+      }),
+    );
+    print('the response ${response.body}');
+  }
 }
