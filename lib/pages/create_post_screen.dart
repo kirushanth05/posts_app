@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:posts_app/components/custom_button.dart';
@@ -106,7 +106,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       isAdding = true;
     });
     Uri url = Uri.https(
-      'posts-app-4ab91-default-rtdb.asia-southeast1.firebasedatabase.app',
+      dotenv.env['FIREBASE_REALTIME_DB_URL']!,
       'posts.json',
     );
 
@@ -116,9 +116,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       body: json.encode({
         'title': _titleController.text,
         'author': _authorNameController.text,
-        'content': _contentController.text
+        'content': _contentController.text,
+        'createdAt': DateTime.now().toString(),
       }),
     );
+
     setState(() {
       isAdding = false;
     });
