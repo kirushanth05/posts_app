@@ -15,9 +15,9 @@ class CreatePostScreen extends StatefulWidget {
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _authorNameController = TextEditingController();
-  TextEditingController _contentController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _authorNameController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
 
   bool isAdding = false;
 
@@ -65,7 +65,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
             const Gap(16),
             CustomButton(
-              label: 'Create Post',
+              label: '${isAdding ? 'Creating' : 'Create'} Post',
               onTap: _addPost,
               isLoading: isAdding,
             ),
@@ -81,7 +81,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       );
 
+  bool isValidInputs() {
+    final String title = _titleController.text.trim();
+    final String author = _authorNameController.text.trim();
+    final String content = _contentController.text.trim();
+
+    if (title.isEmpty || author.isEmpty || content.isEmpty) return false;
+
+    if (content.length < 50) return false;
+
+    return true;
+  }
+
   void _addPost() async {
+    if (isAdding) return;
+
+    if (!isValidInputs()) {
+      _showDialog('Invalid inputs!',
+          'Check your inputs! All fields are required and the content should be more than 50 characters long');
+      return;
+    }
+
     setState(() {
       isAdding = true;
     });
@@ -99,6 +119,40 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         'content': _contentController.text
       }),
     );
-    print('the response ${response.body}');
+    setState(() {
+      isAdding = false;
+    });
+
+    if (response.statusCode >= 400) {
+      _showDialog('Error!', 'Failed to add post. Please try again later');
+      return;
+    }
+
+    _titleController.clear();
+    _authorNameController.clear();
+    _contentController.clear();
+
+    _showDialog('Success!', 'Post added successfully');
+  }
+
+  void _showDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(title),
+        content: Text(
+          content,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('close'),
+          )
+        ],
+      ),
+    );
   }
 }
