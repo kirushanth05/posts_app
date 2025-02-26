@@ -16,6 +16,5 @@ class Post {
     required this.author,
     required this.content,
     required this.createdAt,
-    this.views = 1446,
-  });
+  }) : views = random.nextInt(15000);
 }
