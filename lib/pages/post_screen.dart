@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:posts_app/components/default_app_bar.dart';
+import 'package:posts_app/models/post.dart';
 
 class PostScreen extends StatelessWidget {
-  const PostScreen({super.key});
+  const PostScreen({super.key, required this.post});
+
+  final Post post;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +19,7 @@ class PostScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'The Art of Healthy Living',
+              post.title,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const Gap(8),
@@ -23,15 +27,16 @@ class PostScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  ('By Jane Marsh').toUpperCase(),
+                  ('By ${post.author}').toUpperCase(),
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text('6.12.2020'),
+                Text(
+                    '${post.createdAt.year}/ ${post.createdAt.month} / ${post.createdAt.day}'),
               ],
             ),
             const Gap(16),
             Text(
-              'Dolore esse eu deserunt aliqua aliquip labore sunt. Reprehenderit ut dolor exercitation exercitation. Est dolore ut Lorem non ipsum ex quis laborum elit non laboris dolor. Consequat deserunt officia consectetur deserunt mollit laborum et nostrud cupidatat mollit aliqua enim consequat nisi enim. Sit ad amet incididunt cillum non incididunt adipisicing veniam duis consequat laboris laboris cillum qui veniam. Dolore minim voluptate velit laboris velit elit quis commodo irure cillum. Sit minim nulla dolor fugiat in quis. ',
+              post.content,
             ),
           ],
         ),
