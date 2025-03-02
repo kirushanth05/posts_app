@@ -3,12 +3,10 @@ import 'package:posts_app/models/post.dart';
 import 'package:posts_app/pages/post_screen.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({
-    super.key,
-    required this.post,
-  });
+  const PostCard({super.key, required this.post, this.onDelete});
 
   final Post post;
+  final Function()? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +74,7 @@ class PostCard extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => PostScreen(
           post: post,
+          onDelete: onDelete,
         ),
       ),
     );
