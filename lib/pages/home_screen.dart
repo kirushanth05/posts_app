@@ -3,7 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:posts_app/components/default_app_bar.dart';
 import 'package:posts_app/components/post_card.dart';
 import 'package:posts_app/models/post.dart';
-import 'package:posts_app/pages/create_post_screen.dart';
+import 'package:posts_app/pages/create_update_post_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
@@ -35,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CreatePostScreen(),
+              builder: (context) => CreatePostScreen(
+                onCreate: _fetchAllPosts,
+              ),
             ),
           );
         },
@@ -48,22 +50,28 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(16, 25, 16, 23),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              for (final post in posts) PostCard(post: post),
-              const Gap(16),
-              Text('the posts length is ${posts.length}')
-            ],
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                for (final post in posts)
+                  PostCard(post: post, onDelete: _fetchAllPosts),
+                const Gap(16),
+                Text('the posts length is ${posts.length}')
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _fetchAllPosts() async {
+  Future<void> _fetchAllPosts() async {
+    posts = [];
     Uri url = Uri.https(dotenv.env['FIREBASE_REALTIME_DB_URL']!, 'posts.json');
     final response = await http.get(url);
-    final Map<String, dynamic> decodedResponse = json.decode(response.body);
+    final Map<String, dynamic> decodedResponse =
+        json.decode(response.body) ?? {};
 
     for (final data in decodedResponse.entries) {
       final postObj = Post(
