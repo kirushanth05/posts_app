@@ -85,6 +85,9 @@ class _PostScreenState extends State<PostScreen> {
               widget.post.author = updatedPost.author;
               widget.post.content = updatedPost.content;
             });
+            if (widget.onDelete != null) {
+            widget.onDelete!();
+            }
           },
         ),
       ),
